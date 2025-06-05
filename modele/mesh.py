@@ -282,5 +282,5 @@ cubit.cmd('mesh surface {}'.format(surface_dict['blubber'])  )
 
 cubit.cmd('mesh surface all')
 cubit.cmd('Set Exodus NetCDF4 On')
-cubit.cmd('export mesh "cachalot_v4.e" dimension 2 overwrite')
+cubit.cmd('export mesh "mesh.e" dimension 2 overwrite')
 
