@@ -1,0 +1,35 @@
+{
+    "dt": 1e-7,
+    "nstep": 200000,
+    "time_scheme": "Newmark",
+    "materials": "materials_abc2d.json",
+    "mesh": "cachalot_v1.e",
+    "sources": {
+        "acoustic_2d": {
+            "type": "Ricker",
+            "freq": 10000,
+            "amp": 1.0,
+            "pos": [
+               0.59255,1.03642
+            ]}
+        },
+    "receivers": {
+        "acoustic_2d": {
+            "save_path": "custom_source_acoustic_2d.wav",
+            "pos": [[0.09035, 0.482417], [3.22235, 1.7745], [0.090305, 1.84442]]
+        }
+    },
+    "callbacks":
+    {
+        "acoustic_2d": {
+            "movie": {
+                "xdmf_path": "free_surface_acoustic_2d.xdmf",
+                "every":350,
+                "optional_fields":["vp","rho"]
+            },
+            "stacey": {
+                "surface_names": ["xmin", "xmax", "ymin", "ymax"]
+            }
+        }
+    }
+}
