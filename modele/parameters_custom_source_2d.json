@@ -1,22 +1,22 @@
 {
     "dt": 1e-7,
-    "nstep": 200000,
+    "nstep": 157100,
     "time_scheme": "Newmark",
     "materials": "materials_abc2d.json",
-    "mesh": "cachalot_v1.e",
+    "mesh": "cachalot_v2.e",
     "sources": {
         "acoustic_2d": {
             "type": "Ricker",
             "freq": 10000,
             "amp": 1.0,
             "pos": [
-               0.59255,1.03642
+               0.545,1.36
             ]}
         },
     "receivers": {
         "acoustic_2d": {
             "save_path": "custom_source_acoustic_2d.wav",
-            "pos": [[0.09035, 0.482417], [3.22235, 1.7745], [0.090305, 1.84442]]
+            "pos": [[0.32,0.53],[3.35,2.05],[0.16, 2.2] ]
         }
     },
     "callbacks":
