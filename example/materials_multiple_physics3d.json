@@ -1,0 +1,15 @@
+{
+    "acoustic_3d": {
+        "water": {
+            "vp": 1500,
+            "rho": 1000
+        }
+    },
+    "elastic_3d": {
+        "sediment": {
+            "vp": 1800,
+            "vs": 600,
+            "rho": 1000
+        }
+    }
+}

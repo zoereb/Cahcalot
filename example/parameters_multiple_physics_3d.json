@@ -1,0 +1,34 @@
+{
+    "dt": 1e-4,
+    "nstep": 54000,
+    "time_scheme": "Newmark",
+    "materials": "materials_multiple_physics3d.json",
+    "mesh": "multiple_physics3d.e",
+    "sources": {
+        "acoustic_3d": {
+            "type": "Ricker",
+            "freq": 4,
+            "amp": 10000000000.0,
+            "pos": [
+                0.0,
+                0.0, 0.0
+            ]}
+        },
+    "receivers": {
+        "acoustic_3d": {
+            "save_path": "multiple_physics_acoustic_3d.wav",
+            "pos":  [0.0, 0.0, 0.0]
+        },
+        "elastic_3d": {
+            "save_path": "multiple_physics_elastic_3d.wav",
+            "pos": [0.0, 0.0, 1050.0]
+        }
+    },
+    "modifiers":
+    {
+        "free_surface":
+        {
+            "surface_names": ["zmax"]
+        }
+    }
+}
