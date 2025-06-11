@@ -1,0 +1,93 @@
+{
+    "acoustic_2d": {
+        "muscle": {
+            "vp":1575, 
+            "rho":1075
+        },
+        "case": {
+            "vp": 1650,
+            "rho": 1100
+        },
+        "narine": {
+            "vp": 342,
+            "rho": 1.239
+        },
+        
+        "frontal": {
+            "vp": 342,
+            "rho": 1.239
+        },
+        "blubber": {
+            "vp": 1650,
+            "rho": 1100
+        },
+        "sac": {
+            "vp": 1405,
+            "rho": 832
+        },
+        "tissus": {
+            "vp": 1650,
+            "rho": 1100
+        },
+        "museau": {
+            "vp":1575, 
+            "rho":1075
+        },
+        
+        "junk": {
+            "vp": 1350,
+            "rho": 900
+        },
+        "eau": {
+            "vp": 1500,
+            "rho": 1000
+        },
+        "spermaceti0": {
+            "vp": 1370,
+            "rho": 832
+        },
+        "spermaceti1": {
+            "vp": 1370,
+            "rho": 832
+        },
+        "spermaceti2": {
+            "vp": 1370,
+            "rho": 832
+        },
+        "spermaceti3": {
+            "vp": 1372,
+            "rho": 832
+        },
+        "spermaceti4": {
+            "vp": 1372,
+            "rho": 832
+        },
+        "spermaceti5": {
+            "vp": 1366,
+            "rho": 832
+        },
+        "spermaceti6": {
+            "vp": 1366,
+            "rho": 832
+        },
+        "spermaceti7": {
+            "vp": 1366,
+            "rho": 832
+        },
+        "spermaceti8": {
+            "vp": 1374,
+            "rho": 832
+        },
+        "spermaceti9": {
+            "vp": 1374,
+            "rho": 832
+        }
+    },
+    "elastic_2d": {
+        "skull": {
+            "vp": 2476,
+            "vs" : 1600, 
+            "rho": 1600
+        }
+    }
+}

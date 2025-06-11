@@ -1,0 +1,44 @@
+{
+    "dt": 1e-7,
+    "nstep": 200000,
+    "time_scheme": "Newmark",
+    "materials": "materials_multiple_physics2d.json",
+    "mesh": "mesh.e",
+    "sources": {
+        "acoustic_2d": {
+            "type": "Ricker",
+            "freq": 10000,
+            "amp": 1.0,
+            "pos": [
+                0.937,2.047
+            ]}
+        },
+    "receivers": {
+        "acoustic_2d": {
+            "save_path": "multiple_physics_acoustic_2d.wav",
+            "pos":[[0.53,1.049],[5.54,2.98],[0.797,2.81]]
+        }
+    },
+
+    "callbacks":
+    {
+        "acoustic_2d": {
+            "movie": {
+                "xdmf_path": "free_surface_acoustic_2d.xdmf",
+                "every":350,
+                "optional_fields":["vp","rho"]
+            },
+            "stacey": {
+                "surface_names": ["xmin", "xmax", "ymin", "ymax"]
+            }
+        },
+        "elastic_2d": {
+            "movie": {
+                "xdmf_path": "free_surface_elastic_2d.xdmf",
+                "every":350,
+                "optional_fields":["vp","vs","rho"]
+            }
+        }
+    }
+  
+}

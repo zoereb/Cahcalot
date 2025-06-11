@@ -1,12 +1,12 @@
 #!python
 
 
+
 import csv
 import numpy as np
 import os
 cubit.cmd('reset')
 
-from spermaceti import *
 
 
 lignes_col= np.loadtxt('lignes.csv',delimiter=',' , dtype=str)[0, :]
@@ -50,29 +50,11 @@ for k,v in point_c.items():
   v[0] = v[0]*longueur_x
   v[1] = v[1]*hauteur_y
 
-
-def spermacet(x, y, y_bas, t_spermacetti, spermacetti_id = []) :
- for i in range(len(x)) :
-  vertex('n', x[i], y_bas[i]+ 0.05)
-  p1=cubit.get_last_id('vertex')
-  vertex('n', x[i], y[i]- 0.1)
-  p2=cubit.get_last_id('vertex')
-  vertex('n', x[i]- t_spermacetti, y_bas[i]+ 0.05)
-  p3=cubit.get_last_id('vertex')
-  vertex('n', x[i]- t_spermacetti, y[i]- 0.1)
-  p4=cubit.get_last_id('vertex')
-  cubit.cmd('create curve vertex {} {} '.format(p1,p2))
-  s1=cubit.get_last_id('curve')
-  cubit.cmd('create curve vertex {} {} '.format(p2,p4))
-  s2=cubit.get_last_id('curve')	
-  cubit.cmd('create curve vertex {} {} '.format(p3,p4))
-  s3=cubit.get_last_id('curve')	
-  cubit.cmd('create curve vertex {} {} '.format(p3,p1))
-  s4=cubit.get_last_id('curve')
-  cubit.cmd('create surface  {} {} {} {} '.format(s1,s2,s3,s4 ) )		
-  name = 'I_spermacetti_junk_'+"".join(str(i)) 
-  spermacetti_id.append(cubit.get_last_id('surface'))
-
+def vertex(name, x, y):
+ cubit.cmd('create vertex {} {} 0'.format(x, y) )
+ vertex_dict.update({name: cubit.get_last_id('vertex')})
+ point_c.update({name : [x , y]})
+ return name
 
 #case muscle points
 vertex('C1',point_c['A7'][0] , point_c['A7'][1]+case_t)  
@@ -81,7 +63,6 @@ vertex('C3',point_c['C2'][0] , point_c['C2'][1]+muscle_t)
 vertex('C4',point_c['C1'][0], point_c['C1'][1]+muscle_t)  
 vertex('C5',point_c['A9'][0] -case_t/np.sqrt(2) , point_c['A9'][1]+ case_t/np.sqrt(2) )
 vertex('C6',point_c['C5'][0] -muscle_t/np.sqrt(2) , point_c['C5'][1]+muscle_t/np.sqrt(2))  	
-  
   
 #blubber points
 vertex('E2',point_c['C3'][0] ,point_c['C3'][1]+blubber_dessus_t)  
@@ -110,7 +91,6 @@ vertex('M1',point_c['A1'][0] ,point_c['A3'][1])
 
 # Muscle en dessous de la narine ?
 
-
 ###### Courbes 
 # Points de jonction
 vertex_dict['I_N_S'].append(vertex_dict['A4'])
@@ -126,92 +106,172 @@ vertex_dict['I_Sk_J'].insert(0, vertex_dict['B2'])
 vertex_dict['I_Sk_B'].append(vertex_dict['B2'])
 vertex_dict['I_Sk_B'].insert(0, vertex_dict['D3'])
 
+lst1 = [vertex_dict['A5'], vertex_dict['A6'], vertex_dict['A7'] , vertex_dict['C1'], vertex_dict['C4'], vertex_dict['E7'], vertex_dict['F1'], vertex_dict['F2'], vertex_dict['F3'], vertex_dict['F5'], vertex_dict['F4'], vertex_dict['F6']]
+lst2 = [ x for x in vertex_dict['I_Sk_J']]
+for i, e in enumerate(vertex_dict['I_Sk_B']) :
+ lst2.append(e)
+lst2.append(vertex_dict['E5'])
+
+cubit.cmd('Group "squelettehaut" equals vertex {}'+" ".join(str(x) for x in lst1 ))
+cubit.cmd('Group "squelettebas" equals vertex {}'+" ".join(str(x) for x in lst2 ))
+
+cubit.cmd(f'rotate group 2 about origin 5.8 0.8  direction 0 0 1 angle 10')
+cubit.cmd(f'rotate group 3 about origin 5.8 0.8  direction 0 0 1 angle 2')
+
 curve_dict = dict()
 
+def vertex_spline(name_vertex, name_curve): 
+ cubit.cmd('create curve spline vertex '+" ".join(str(x) for x in vertex_dict[name_vertex] ))
+ curve_dict.update({name_curve : cubit.get_last_id('curve')})
+ return name_curve
+
+def curve(name_vertex, name_curve): 
+ cubit.cmd('create curve spline vertex '+" ".join(str(vertex_dict[x]) for  x in name_vertex ))
+ curve_dict.update({name_curve : cubit.get_last_id('curve')})
+ return name_curve
+
+
 #MUSEAU
-vertex2(['A1', 'A2'], 'I_museau_muscle')
-vertex2(['A2', 'A3'], 'I_museau_case')
-vertex2([ 'A3', 'M1', 'A1'], 'I_museau_narine')
+curve(['A1', 'A2'], 'museau|muscle')
+curve(['A2', 'A3'], 'museau|case')
+curve([ 'A3', 'M1', 'A1'], 'museau|narine')
 
 
-vertex2(['C1','C4'], 'I_skull_muscle')
-vertex2(['A1', 'C6', 'C3'], 'I_tissus_muscle')
-vertex2(['C1', 'C2'], 'I_case_muscle_1')
-vertex2(['C3', 'C4'], 'I_muscle_blubber_1')
-vertex2(['D4', 'E8'], 'I_tissus_blubber_1')
-vertex2(['E8', 'C3'], 'I_tissus_blubber_2')
-vertex2(['C2','C5', 'A2' ], 'I_case_muscle_2')
-vertex_spline('I_B_N_2',  'I_tissus_narine')
-vertex_spline('I_N_S',  'I_narine_sac') 
-vertex2(['A8','A7'], 'I_case_sac_1')
-vertex2(['A8', 'A9','A3' ], 'I_case_sac_2')
+curve(['C1','C4'], 'skull|muscle')
+curve(['A1', 'C6', 'C3'], 'tissus|muscle')
+curve(['C1', 'C2'], 'case|muscle_1')
+curve(['C3', 'C4'], 'muscle|blubber')
+curve(['D4', 'E8'], 'tissus|blubber_1')
+curve(['E8', 'C3'], 'tissus|blubber_2')
+curve(['C2','C5', 'A2' ], 'case|muscle_2')
+vertex_spline('I_B_N_2',  'tissus|narine')
+vertex_spline('I_N_S',  'narine|sac_1') 
+curve(['A8','A7'], 'case|sac_1')
+curve(['A8', 'A9','A3' ], 'case|sac_2')
 
-vertex_spline('I_Sk_J',  'I_skull_junk') 
-vertex_spline('I_Sk_B',  'I_skull_blubber_bas') 
-vertex2(['C1','A7'],'I_skull_case')
-vertex2(['D3', 'E7'],'I_skull')
-vertex2(['C4', 'E7'], 'I_skull_blubber_haut')
+vertex_spline('I_Sk_J',  'skull|junk') 
+vertex_spline('I_Sk_B',  'skull|blubber_1') 
+curve(['C1','A7'],'skull|case')
+curve(['D3', 'E7'],'skull')
+curve(['C4', 'E7'], 'skull|blubber_2')
 
 #######Sac frontal :
-vertex2(['F1','F2', 'F3', 'F4'], 'I_frontal_skull_1')
-vertex2(['F5','A5', 'A6','F6' ], 'I_frontal_sac')
-vertex2(['F1', 'F6'], 'I_frontal_sac_2')
-vertex2([ 'F4', 'F5'], 'I_frontal_skull_2')
-vertex2(['A7','F1'], 'I_skull_sac_2')
-vertex2(['F5', 'B3'], 'I_skull_sac')
-vertex2(['A4', 'B3'], 'I_junk_sac')
+curve(['F1','F2', 'F3', 'F4'], 'frontal|skull_1')
+curve(['F5','A5', 'A6','F6' ], 'frontal|sac_1')
+curve(['F1', 'F6'], 'frontal|sac_2')
+curve([ 'F4', 'F5'], 'frontal|skull_2')
+curve(['A7','F1'], 'skull|sac_3')
+curve(['F5', 'B3'], 'skull|sac_1')
+curve(['A4', 'B3'], 'junk|sac')
 
-vertex2(['B1','B2'],'I_blubber_junk')
-vertex_spline('I_B_N_1',  'I_blubber_narine_1') 
-vertex2(['D4', 'D1'], 'I_narine_blubber_2')
-vertex_spline('I_N_J',  'I_narine_junk') 
+curve(['B1','B2'],'blubber|junk')
+vertex_spline('I_B_N_1',  'narine|blubber_1') 
+curve(['D4', 'D1'], 'I_narine|blubber_2')
+vertex_spline('I_N_J',  'narine|junk_1') 
 ####Blubber :
-vertex2(['E6', 'D3' ], 'blubber_bas_arriere')
-vertex2([ 'E3','E4' ,'E5'], 'I_eau_blubber_avant')
-vertex2(['E1', 'E2'], 'I_eau_blubber_haut_milieu_1')
-vertex2(['E2', 'E3'], 'I_eau_blubber_haut_milieu_2')
-vertex2(['E7', 'E1'], 'blubber_haut_arriere')
-vertex2(['E5', 'E6'], 'I_eau_blubber_bas')
+curve(['E6', 'D3' ], 'blubber_bas_arriere')
+curve([ 'E3','E4' ,'E5'], 'eau|blubber_4')
+curve(['E1', 'E2'], 'eau|blubber_1')
+curve(['E2', 'E3'], 'eau|blubber_2')
+curve(['E7', 'E1'], 'blubber_haut_arriere')
+curve(['E5', 'E6'], 'eau|blubber_3')
+
+def calcul_m(name) :
+ vertex = point_c[name]
+ theta = np.radians(180+20)
+ matrice =np.array( [ [np.cos(theta), -np.sin(theta) ], [np.sin(theta) , np.cos(theta) ] ])
+ rho = np.sqrt(vertex[0]**2+vertex[1]**2)
+ x = point_c['F3'][0]-vertex[0]
+ y = point_c['F3'][1]-vertex[1]
+ vtruc = np.array([[x],[y]])
+ e =matrice@vtruc
+ a = e[0,0]+ point_c['F3'][0]
+ b = e[1,0]+ point_c['F3'][1]
+ cubit.cmd('vertex {} move {} {} 0 keep'.format(vertex_dict[name], a, b) )
+
+
+calcul_m('A7')
+calcul_m('F2')
+print(vertex_dict['F2'])
+
+
 
 ### Surfaces
 surface_dict = dict()
+def surface( name_surface): 	
+ id_curve = [v for k,v in curve_dict.items() if name_surface in k ] 
+ cubit.cmd('create surface curve '+" ".join(str(x) for x in id_curve ) )
+ surface_dict.update({name_surface : cubit.get_last_id('surface')})
+ return
 
 surface( 'narine')  
 surface( 'muscle')
 surface( 'case') 
 surface( 'skull') 
+
 surface( 'frontal') 
 surface( 'blubber')
 surface( 'sac')
 surface('tissus')
 surface( 'museau')
 surface( 'junk')
+###### 
+
+cubit.cmd(f'rotate surface 4 about origin 5.8 0.8  direction 0 0 1 angle 0')
 
 #####Lentilles Junk 
 x = np.linspace(point_c['I_N_J'][20, 0]-0.05 , point_c['J1'][0]-0.05 , 10)
 y = np.interp( list(x) , list(point_c['I_N_S'][:, 0]) ,  list(point_c['I_N_S'][:, 1]) )	
 y_bas = np.interp( list(x) , list(point_c['I_Sk_J'][:, 0]) ,  list(point_c['I_Sk_J'][:, 1]) )
+spermacetti_id = []
 
-spermacet(x, y, y_bas, 0.07) 
+def spermacet(x, y, y_bas, t_spermacetti) :
+ for i in range(len(x)) :
+  vertex('n', x[i], y_bas[i]+ 0.05)
+  p1=cubit.get_last_id('vertex')
+  vertex('n', x[i], y[i]- 0.1)
+  p2=cubit.get_last_id('vertex')
+  vertex('n', x[i]- t_spermacetti, y_bas[i]+ 0.05)
+  p3=cubit.get_last_id('vertex')
+  vertex('n', x[i]- t_spermacetti, y[i]- 0.1)
+  p4=cubit.get_last_id('vertex')
+  cubit.cmd('create curve vertex {} {} '.format(p1,p2))
+  s1=cubit.get_last_id('curve')
+  curve_dict.update( {       'spermaceti1_'+"".join(str(i)  )  : s1 })
+  cubit.cmd('create curve vertex {} {} '.format(p2,p4))
+  s2=cubit.get_last_id('curve')	
+  curve_dict.update({ 'spermaceti2_'+"".join(str(i))    :  s2})
+  cubit.cmd('create curve vertex {} {} '.format(p3,p4))
+  s3=cubit.get_last_id('curve')
+  curve_dict.update({ 'spermaceti3_'+"".join(str(i)):s3})	
+  cubit.cmd('create curve vertex {} {} '.format(p3,p1))
+  s4=cubit.get_last_id('curve')
+  curve_dict.update({ 'spermaceti4_'+"".join(str(i) ) : s4})
+
+  name = 'spermaceti'+"".join(str(i)) 
+  cubit.cmd('create surface  {} {} {} {} '.format(s1,s2,s3,s4 ) )
+  surface_dict.update({name : cubit.get_last_id('surface')})
+  spermacetti_id.append(cubit.get_last_id('surface'))
+
+spermacet(x, y, y_bas, 0.12) 
 
 
 cubit.cmd('subtract {} from 10 keep'.format( " ".join(str(x) for x in spermacetti_id)))
 surface_dict.update({'junk_last' : cubit.get_last_id('surface')})
 cubit.cmd('delete surface 10')
-cubit.cmd('split surface {} across location vertex {} onto curve {} '.format(surface_dict['junk_last'], vertex_dict['J1'], curve_dict['I_skull_junk']))
+cubit.cmd('split surface {} across location vertex {} onto curve {} '.format(surface_dict['junk_last'], vertex_dict['J1'], curve_dict['skull|junk']))
 cubit.cmd('Unite {} With {} '.format(surface_dict['sac'], surface_dict['junk_last'] ))
 surface_dict.update({'junk' : cubit.get_last_id('surface')})
 surface_dict.pop('junk_last')
 
 ######## Nouvelles courbes dans le dictionnaire de courbes manuellement ! 
-lst =[x for x in range(66,105)]
-curve_dict.update({'I_junk_spermacetti': lst})
-curve_dict.update({'I_narine_sac_2': 151})
-curve_dict.update({'I_skull_sac_2': 152})
-curve_dict.update({'I_sac_junk': 150})
 
-curve_dict.update({'I_skull_junk': 153})
-curve_dict.update({'I_narine_junk': 154})
+curve_dict.update({'narine|sac_2': 154})
+curve_dict.update({'skull|sac_2': 153})
+curve_dict.update({'sac|junk': 150})
+
+curve_dict.update({'skull|junk': 152})
+curve_dict.update({'narine|junk': 151})
 
 
 ## surface du cadre
@@ -224,14 +284,15 @@ vertex('X1', xmax, ymax)
 vertex('X2', xmax, ymin)
 vertex('X3', xmin, ymin)
 vertex('X4', xmin, ymax)
-vertex2(['X1', 'X2'], 'right_bord_C')
-vertex2(['X3', 'X4'], 'left_bord_C')
-vertex2(['X3', 'X2'], 'bottom_bord_C')
-vertex2(['X1', 'X4'], 'up_bord_C')
+curve(['X1', 'X2'], 'right_bord_C')
+curve(['X3', 'X4'], 'left_bord_C')
+curve(['X3', 'X2'], 'bottom_bord_C')
+curve(['X1', 'X4'], 'up_bord_C')
 surface('bord_C')
 cubit.cmd('subtract {} to {} from surface {} keep'.format(1, 20 , surface_dict['bord_C']) )
-surface_dict.update({'bord' : cubit.get_last_id('surface')})
+surface_dict.update({'eau' : cubit.get_last_id('surface')})
 cubit.cmd('delete surface {} '.format(surface_dict['bord_C']))
+
 
 cubit.cmd(f'surface all size 0.01')
 
@@ -241,23 +302,17 @@ for k, v in surface_dict.items() :
  cubit.cmd(f'block {v} surface {v}')
  cubit.cmd(f'block {v} element type QUAD4')
  cubit.cmd('block {} name "{}"'.format(v, k))
-	
-cubit.cmd(f'block 10 surface 11 to 20')
-cubit.cmd(f'block 10 element type QUAD4')
-cubit.cmd('block 10 name "spermacetti"')
-
-cubit.cmd('block 11 surface {} '.format(surface_dict['bord']) )
-cubit.cmd(f'block 11 element type QUAD4')
-cubit.cmd('block 11 name "bord" ')
 
 ## Sideset
 cubit.cmd('imprint all')
 cubit.cmd('merge all')
 
-list_curve_xmax = [164, 160, curve_dict['I_skull'], curve_dict['blubber_haut_arriere'] , curve_dict['blubber_bas_arriere'] ]
+list_curve_xmax = [160, 164, curve_dict['skull'], curve_dict['blubber_haut_arriere'] , curve_dict['blubber_bas_arriere'] ]
 cubit.cmd('sideset 1 curve '+" ".join(str(x) for x in list_curve_xmax))
 cubit.cmd(f'sideset 1 name "xmax" ')
-
+curve_dict.pop('skull')
+curve_dict.pop('blubber_haut_arriere') 
+curve_dict.pop('blubber_bas_arriere')
 
 cubit.cmd('sideset 2 curve 162 ')
 cubit.cmd(f'sideset 2 name "xmin"')
@@ -268,19 +323,41 @@ cubit.cmd(f'sideset 3 name "ymin"')
 cubit.cmd('sideset 4 curve  163')
 cubit.cmd(f'sideset 4 name "ymax"')
 
+def side(name, nb, el1, el2) :
+ cubit.cmd('sideset {} curve {}'.format(nb , " ".join(str(v) for k,v in curve_dict.items() if el1 in k and el2 in k) ) )
+ cubit.cmd('sideset {} name "{}" '.format(nb, name ))
 
-s = 4
+side("eau|blubber", 5 , "eau", "blubber")
+side("case|sac", 6 , "case", "sac")
+side("tissus|blubber", 7 , "tissus", "blubber")
+side("narine|blubber", 8 , "narine", "blubber")
+side("frontal|sac", 9 , "frontal", "sac")
+side("narine|junk", 10 , "narine", "junk")
+side("case|muscle", 11 , "case", "muscle")
+side("narine|sac", 12 , "narine", "sac")
+
+side("skull|sac", 13 , "skull", "sac")
+side("skull|junk", 14 , "skull", "junk")
+side("skull|frontal", 16 , "skull", "frontal")
+side("skull|blubber", 15 , "skull", "blubber")
+
+def side_spermaceti(s, n):
+ cubit.cmd('sideset {} curve {}'.format(s, " ".join(str(v) for k,v in curve_dict.items() if list(k)[-1] == str(n) and 'spermaceti' in k ) ))
+ cubit.cmd('sideset {} name "junk|spermaceti{}" '.format(s,n  ))
+ return
+
+s = 15
+n=0
 for k,v in curve_dict.items() : 
- s+=1
- cubit.cmd(f'sideset {s} curve {v}' )
- cubit.cmd(f'sideset {s} name "{k}"')
- print(f'sideset {s} name "{k}"')
+ if not list(k)[-1].isdigit() and 'spermaceti' not in k:
+  s+=1
+  cubit.cmd(f'sideset {s} curve {v}' )
+  cubit.cmd(f'sideset {s} name "{k}"')
+  print(f'sideset {s} name "{k}"')
+ if 'spermaceti1' in k :
+  s+=1
+  side_spermaceti(s,n)
+  n+=1
+   
 
-cubit.cmd('mesh surface {}'.format(surface_dict['narine'])  )
-cubit.cmd('mesh surface {}'.format(surface_dict['blubber'])  )
-
-
-cubit.cmd('mesh surface all')
-cubit.cmd('Set Exodus NetCDF4 On')
-cubit.cmd('export mesh "mesh.e" dimension 2 overwrite')
 
