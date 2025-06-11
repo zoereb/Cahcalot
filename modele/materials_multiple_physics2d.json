@@ -42,44 +42,8 @@
             "vp": 1500,
             "rho": 1000
         },
-        "spermaceti0": {
+        "spermaceti": {
             "vp": 1370,
-            "rho": 832
-        },
-        "spermaceti1": {
-            "vp": 1370,
-            "rho": 832
-        },
-        "spermaceti2": {
-            "vp": 1370,
-            "rho": 832
-        },
-        "spermaceti3": {
-            "vp": 1372,
-            "rho": 832
-        },
-        "spermaceti4": {
-            "vp": 1372,
-            "rho": 832
-        },
-        "spermaceti5": {
-            "vp": 1366,
-            "rho": 832
-        },
-        "spermaceti6": {
-            "vp": 1366,
-            "rho": 832
-        },
-        "spermaceti7": {
-            "vp": 1366,
-            "rho": 832
-        },
-        "spermaceti8": {
-            "vp": 1374,
-            "rho": 832
-        },
-        "spermaceti9": {
-            "vp": 1374,
             "rho": 832
         }
     },
