@@ -1,5 +1,5 @@
 {
-    "dt": 1e-7,
+    "dt":1e-7,
     "nstep": 200000,
     "time_scheme": "Newmark",
     "materials": "materials_multiple_physics2d.json",
@@ -10,13 +10,13 @@
             "freq": 10000,
             "amp": 1.0,
             "pos": [
-                0.937,2.047
+                0.927,1.714
             ]}
         },
     "receivers": {
         "acoustic_2d": {
-            "save_path": "multiple_physics_acoustic_2d.wav",
-            "pos":[[0.53,1.049],[5.54,2.98],[0.797,2.81]]
+            "save_path": "0degres_2d.wav",
+            "pos":[[0.59,0.6],[5.64,2.42],[0.65,2.53]]
         }
     },
 
