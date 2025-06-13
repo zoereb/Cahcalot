@@ -333,7 +333,6 @@ side("case|muscle", 11 , "case", "muscle")
 side("narine|sac", 12 , "narine", "sac")
 
 side("sac|skull", 13 , "sac","skull")
-side("junk|skull", 14 , "junk", "skull")
 side("frontal|skull", 16 , "frontal", "skull")
 side("blubber|skull", 15 , "blubber", "skull")
 side("junk|spermaceti", 17 , "spermaceti", "junk")
@@ -366,4 +365,3 @@ cubit.cmd('mesh surface all')
 
 cubit.cmd('Set Exodus NetCDF4 On')
 cubit.cmd('export mesh "mesh.e" dimension 2 overwrite')
-
