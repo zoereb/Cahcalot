@@ -96,6 +96,10 @@ vertex('M2',point_c['I_B_N_2'][-1,0] ,point_c['I_B_N_2'][-1,1])
 vertex('M3',point_c['A2'][0] ,point_c['M2'][1]) 
 vertex('M4',point_c['A3'][0] ,point_c['A3'][1]+0.02) 
 
+# Skull nouveau point
+vertex('S1',point_c['B2'][0] - 0.02,point_c['B2'][1]) 
+
+
 ###### Courbes 
 # Points de jonction
 vertex_dict['I_N_S'].append(vertex_dict['A4'])
@@ -119,6 +123,8 @@ lst2 = [ x for x in vertex_dict['I_Sk_J']]
 for i, e in enumerate(vertex_dict['I_Sk_B']) :
  lst2.append(e)
 lst2.append(vertex_dict['E5'])
+
+######" Rotation 
 
 cubit.cmd('Group "squelettehaut" equals vertex {}'+" ".join(str(x) for x in lst1 ))
 cubit.cmd('Group "squelettebas" equals vertex {}'+" ".join(str(x) for x in lst2 ))
@@ -174,7 +180,9 @@ curve(['A7','F1'], 'sac|skull_3')
 curve(['F5', 'B3'], 'sac|skull_1')
 curve(['A4', 'B3'], 'junk|sac')
 
-curve(['B1','B2'],'blubber|junk')
+curve(['B1','S1'],'blubber|junk_1')
+curve(['S1','B2'],'blubber|junk_2')
+
 vertex_spline('I_B_N_1',  'narine|blubber_1') 
 curve(['D4', 'D1'], 'I_narine|blubber_2')
 vertex_spline('I_N_J',  'narine|junk_1') 
@@ -193,8 +201,6 @@ def surface( name_surface):
  id_curve = [v for k,v in curve_dict.items() if name_surface in k ] 
  cubit.cmd('create surface curve '+" ".join(str(x) for x in id_curve ) )
  surface_dict.update({name_surface : cubit.get_last_id('surface')})
- if name_surface= "sac" :
-  print(id_curve)
  return
 
 surface( 'narine')  
@@ -241,7 +247,7 @@ def spermacet(x, y, y_bas, t_spermacetti) :
 
   name = 'spermaceti'+"".join(str(i)) 
   cubit.cmd('create surface  {} {} {} {} '.format(s1,s2,s3,s4 ) )
-  #surface_dict.update({name : cubit.get_last_id('surface')})
+  surface_dict.update({name : cubit.get_last_id('surface')})
   spermacetti_id.append(cubit.get_last_id('surface'))
 
 spermacet(x, y, y_bas, 0.12) 
@@ -260,7 +266,7 @@ curve_dict.update({'narine|sac_2': 160})
 curve_dict.update({'skull|sac_2': 159})
 curve_dict.update({'sac|junk': 156})
 
-curve_dict.update({'skull|junk': 158})
+curve_dict.update({'junk|skull': 158})
 curve_dict.update({'narine|junk': 157})
 
 
@@ -355,8 +361,6 @@ for k,v in curve_dict.items() :
 
 
 ##### Mesh
-cubit.cmd('mesh surface {}'.format(surface_dict['skull']) )
-
 cubit.cmd('mesh surface {}'.format(surface_dict['muscle']) )
 cubit.cmd('mesh surface {}'.format(surface_dict['narine']) )
 cubit.cmd('mesh surface {}'.format(surface_dict['blubber']) )
@@ -365,3 +369,5 @@ cubit.cmd('mesh surface all')
 
 cubit.cmd('Set Exodus NetCDF4 On')
 cubit.cmd('export mesh "mesh.e" dimension 2 overwrite')
+
+
